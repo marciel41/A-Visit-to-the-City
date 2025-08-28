@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uma Visita à Cidade</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Poppins", sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #333;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            max-width: 700px;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+            animation: fadeIn 1s ease;
+            transition: background 0.4s ease, color 0.4s ease;
+            z-index: 1;
+        }
+
+        /* Menu e favoritos */
+        .menu-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 35px;
+            height: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            z-index: 1002;
+        }
+
+        .bar {
+            height: 5px;
+            background-color: #007bff;
+            border-radius: 3px;
+            transition: background 0.3s ease;
+        }
+
+        .menu-btn:hover .bar {
+            background-color: #0056b3;
+        }
+
+        .menu-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 250px;
+            height: 100%;
+            background: #fff;
+            box-shadow: -4px 0px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            padding: 60px 20px 20px;
+            gap: 15px;
+            transform: translateX(100%);
+            visibility: hidden;
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s;
+            z-index: 1001;
+        }
+
+        .menu-panel.active {
+            transform: translateX(0);
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .menu-panel button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: #f1f1f1;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .menu-panel button:hover {
+            background: #007bff;
+            color: #fff;
+        }
+
+        #favoritesList {
+            margin-top: 10px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .fav-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95em;
+            background: #f9f9f9;
+            padding: 6px 8px;
+            border-radius: 8px;
+        }
+
+        .fav-item a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .remove-fav {
+            background: none;
+            border: none;
+            color: red;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        /* Fim menu e favoritos */
+
+        #title-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        #title {
+            font-size: 2.2em;
+            color: #007bff;
+            font-weight: 600;
+            transition: color 0.4s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .fav-btn-title {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #ccc;
+            transition: color 0.3s ease;
+        }
+
+        .fav-btn-title.active {
+            color: gold;
+        }
+
+        .text-container {
+            text-align: left;
+            padding: 20px;
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            border: none;
+        }
+
+        .text-container p {
+            line-height: 1.8;
+            margin-bottom: 1.5em;
+        }
+
+        .word {
+            position: relative;
+            cursor: pointer;
+            display: inline-block;
+            padding: 0 2px;
+            transition: color 0.2s ease;
+        }
+
+        .word:hover {
+            background-color: #b2ebf2;
+            border-radius: 5px;
+        }
+
+        .word:hover::after {
+            content: attr(data-translation);
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            z-index: 10;
+            opacity: 0.9;
+            margin-bottom: 5px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        #title:hover::after {
+            content: attr(data-translation);
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            z-index: 10;
+            opacity: 0.9;
+            margin-bottom: 5px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .back-button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-button {
+            padding: 12px 24px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Dark Theme */
+        body.dark {
+            background: linear-gradient(135deg, #1e1e1e, #121212);
+            color: #f1f1f1;
+        }
+
+        body.dark .container {
+            background: #1f1f1f;
+            box-shadow: 0px 4px 20px rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark #title {
+            color: #66d9ef;
+        }
+
+        body.dark .text-container {
+            background: #2b2b2b;
+        }
+
+        body.dark .word:hover {
+            background-color: #4a4a4a;
+        }
+
+        body.dark .bar {
+            background-color: #66d9ef;
+        }
+
+        body.dark .menu-panel {
+            background: #222;
+            color: #f1f1f1;
+        }
+
+        body.dark .menu-panel button {
+            background: #333;
+            color: #f1f1f1;
+        }
+
+        body.dark .menu-panel button:hover {
+            background: #66d9ef;
+            color: #000;
+        }
+
+        body.dark .fav-item {
+            background: #3a3a3a;
+        }
+
+        body.dark .fav-item a {
+            color: #66d9ef;
+        }
+
+        body.dark .fav-btn-title {
+            color: #555;
+        }
+
+        body.dark .fav-btn-title.active {
+            color: #ffc400;
+        }
+
+        body.dark .back-button {
+            background-color: #66d9ef;
+            color: #000;
+        }
+
+        body.dark .back-button:hover {
+            background-color: #4ac1e2;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="menu-btn" id="menuBtn">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+    </div>
+
+    <div class="menu-panel" id="menuPanel">
+        <button id="toggleTheme"><i class="fas fa-cog"></i> Alterar Tema</button>
+        <button id="showFavorites"><i class="fas fa-star"></i> Lista de Favoritos</button>
+        <div id="favoritesList"></div>
+    </div>
+
+    <div class="container">
+        <div id="title-container">
+            <h1 id="title" data-translation="Uma Visita à Cidade">A Visit to the City</h1>
+            <button class="fav-btn-title"><i class="fas fa-star"></i></button>
+        </div>
+
+        <div class="text-container">
+            <p>
+                <span class="word" data-translation="No último fim de semana,">Last weekend,</span>
+                <span class="word" data-translation="eu fui à cidade com meu pai.">I went to the city with my dad.</span>
+                <span class="word" data-translation="Nós pegamos o trem.">We took the train.</span>
+                <span class="word" data-translation="A cidade era muito grande">The city was very big</span>
+                <span class="word" data-translation="e movimentada.">and busy.</span>
+                <span class="word" data-translation="Havia muitos prédios altos.">There were many tall buildings.</span>
+                <span class="word" data-translation="Eu nunca tinha visto">I had never seen</span>
+                <span class="word" data-translation="tantas pessoas antes.">so many people before.</span>
+                <span class="word" data-translation="Nós andamos por muito tempo.">We walked around for a long time.</span>
+                <span class="word" data-translation="Nós visitamos um grande museu.">We visited a big museum.</span>
+                <span class="word" data-translation="Ele estava cheio de quadros">It was full of old paintings</span>
+                <span class="word" data-translation="e estátuas antigas.">and statues.</span>
+                <span class="word" data-translation="Foi muito interessante.">It was very interesting.</span>
+                <span class="word" data-translation="Nós comemos pizza no almoço">We ate pizza for lunch</span>
+                <span class="word" data-translation="em um pequeno restaurante.">at a small restaurant.</span>
+                <span class="word" data-translation="A pizza estava deliciosa.">The pizza was delicious.</span>
+            </p>
+            <p>
+                <span class="word" data-translation="Nós também fomos a um parque na cidade.">We also went to a park in the city.</span>
+                <span class="word" data-translation="Era tão verde e silencioso.">It was so green and quiet.</span>
+                <span class="word" data-translation="Foi uma pausa agradável">It was a nice break</span>
+                <span class="word" data-translation="de todo o barulho.">from all the noise.</span>
+                <span class="word" data-translation="Nós tiramos algumas fotos.">We took some pictures.</span>
+                <span class="word" data-translation="Então, fomos a uma grande loja.">Then, we went to a big store.</span>
+                <span class="word" data-translation="Eu comprei uma camiseta nova.">I bought a new T-shirt.</span>
+                <span class="word" data-translation="Estávamos muito cansados">We were very tired</span>
+                <span class="word" data-translation="quando voltamos para casa.">when we came home.</span>
+                <span class="word" data-translation="Mas foi um ótimo dia.">But it was a great day.</span>
+                <span class="word" data-translation="Eu quero voltar para a cidade">I want to go back to the city</span>
+                <span class="word" data-translation="novamente em breve.">again soon.</span>
+            </p>
+        </div>
+        <div class="back-button-container">
+            <a href="#" class="back-button">VOLTAR</a>
+        </div>
+    </div>
+
+    <script>
+        const menuBtn = document.getElementById("menuBtn");
+        const menuPanel = document.getElementById("menuPanel");
+        const toggleThemeBtn = document.getElementById("toggleTheme");
+        const showFavoritesBtn = document.getElementById("showFavorites");
+        const favoritesList = document.getElementById("favoritesList");
+        const body = document.body;
+        const favBtnTitle = document.querySelector(".fav-btn-title");
+
+        menuBtn.addEventListener("click", () => menuPanel.classList.toggle("active"));
+
+        if (localStorage.getItem("theme") === "dark") body.classList.add("dark");
+
+        toggleThemeBtn.addEventListener("click", () => {
+            body.classList.toggle("dark");
+            localStorage.setItem("theme", body.classList.contains("dark") ? "dark" : "light");
+        });
+
+        showFavoritesBtn.addEventListener("click", () => {
+            favoritesList.style.display = favoritesList.style.display === "flex" ? "none" : "flex";
+        });
+
+        function loadFavorites() {
+            favoritesList.innerHTML = "";
+            const saved = JSON.parse(localStorage.getItem("favorites")) || [];
+            saved.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "fav-item";
+                div.innerHTML = `<a href="${item.href}">${item.text}</a>
+                    <button class="remove-fav"><i class="fas fa-times"></i></button>`;
+                div.querySelector(".remove-fav").addEventListener("click", () => removeFavorite(item.href));
+                favoritesList.appendChild(div);
+            });
+
+            const currentPage = {
+                text: document.getElementById('title').textContent,
+                href: window.location.href
+            };
+            const isFav = saved.some(fav => fav.href === currentPage.href);
+            favBtnTitle.classList.toggle("active", isFav);
+        }
+
+        favBtnTitle.addEventListener("click", () => {
+            const title = document.getElementById("title");
+            const href = window.location.href;
+            const text = title.textContent;
+
+            let saved = JSON.parse(localStorage.getItem("favorites")) || [];
+
+            if (favBtnTitle.classList.contains("active")) {
+                saved = saved.filter(fav => fav.href !== href);
+            } else {
+                saved.push({ text: text, href: href });
+            }
+
+            localStorage.setItem("favorites", JSON.stringify(saved));
+            loadFavorites();
+        });
+
+        function removeFavorite(href) {
+            let saved = JSON.parse(localStorage.getItem("favorites")) || [];
+            saved = saved.filter(fav => fav.href !== href);
+            localStorage.setItem("favorites", JSON.stringify(saved));
+            loadFavorites();
+        }
+
+        loadFavorites();
+    </script>
+</body>
+</html>
